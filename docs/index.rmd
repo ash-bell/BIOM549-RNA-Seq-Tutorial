@@ -31,7 +31,7 @@ Intended Learning Outcomes (ILOs) for this module.
 
 There are two sessions for this workshop both taught in person. It is
 not compulsory to attend but, these are the only times I am teaching. I
-would highly recommend you attend them.
+would highly recommend you attend them.Before you attend the first session, you need to have install RStudio and all packages required for this tutorial. You can find instructions on how to do this on the [Installation](#-Installation) tab. 
 
 ```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "

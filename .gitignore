@@ -1,4 +1,4 @@
 
-metadata.csv
-count_data.csv
-Gene_annotations.tsv
+/docs/metadata.csv
+/docs/count_data.csv
+/docs/Gene_annotations.tsv
