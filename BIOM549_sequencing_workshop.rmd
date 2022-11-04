@@ -1,5 +1,6 @@
 ---
 title: "BIOM549 Sequencing Workshop"
+subtitle: "Get the updated workshop sheet here: "
 author: "Ashley Bell"
 date: "31/10/2022"
 output: rmdformats::material
@@ -12,37 +13,35 @@ knitr::opts_chunk$set(echo = TRUE)
 # BIOM549 Sequencing Workshop
 ## Introduction
 
-Welcome to the BIOM549 bioinformatics workshop. The goal of this workshop is to 
-provide you with some basic insight in how RNA-Seq data sets are analysed. Using 
-this worksheet we hope to cover the following Intended Learning Outcomes (ILOs)
+Welcome to the BIOM549 bioinformatics workshop. The goal of this workshop is to provide you with some basic insight in how RNA-Seq data sets are analysed. Using this worksheet we will cover the following Intended Learning Outcomes (ILOs) for this module.
 
 4. Interpret experimental data obtained using experimental techniques
 6. With minimal guidance, deploy established techniques of analysis, practical investigation and enquiry within the biosciences
 7. Critically evaluate experimental data
 
 ## Timetable 2022
-There are two sessions for this workshop taught in person. It is not compulsory to attend these sessions but, these are the only times I am available to help. I would highly recommend you attend them.
+There are two sessions for this workshop both taught in person. It is not compulsory to attend but, these are the only times I am  teaching. I would highly recommend you attend them.
 ```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
-|Date & Time                            | Location            | Items                                 |
-|---------------------------------------|---------------------|---------------------------------------|
-|**Wed 30 Nov 13:30 - 16:30**           | **Old Library 137** | **Analysis tutorial and walkthrough** |
-|**Tues 13 Dec 09:30 - 12:30**          | **Old Library 137** | **How to present your data**          |
+|Date & Time                  | Location          | Items                               |
+|-----------------------------|-------------------|-------------------------------------|
+|**Wed 30 Nov 13:30 - 16:30** |**Old Library 137**|**Analysis tutorial and walkthrough**|
+|**Tues 13 Dec 09:30 - 12:30**|**Old Library 137**|**How to present your data**         |
 "
 cat(tabl)
 ```
 I will also make myself available over teams and in person in between seminars. Do contact me if you have any issues and I will help you solve them. 
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
-|Date & Time                            | Location            | Items                                 |
-|---------------------------------------|---------------------|---------------------------------------|
-|Wed 23 Nov 13:30 - 16:30               | Teams / TBC         | Install RStudio and R packages        |
-|Wed 07 Dec 11:30 - 14:30               | Teams / TBC         | Drop in session                       |
-|Wed 21 Dec 13:30 - 16:30               | Drop in session     | Teams / TBC                           |
+|Date & Time             | Location            | Items                        |
+|------------------------|---------------------|------------------------------|
+|Wed 23 Nov 13:30 - 16:30|Teams / TBC          |Install RStudio and R packages|
+|Wed 07 Dec 11:30 - 14:30|Teams / TBC          |Drop in session               |
+|Wed 21 Dec 13:30 - 16:30|Drop in session      |Teams / TBC                   |
 "
 cat(tabl)
 ```
-If you have any questions or queries outside of these times, you can email me at agb214@exeter.ac.uk and I will get back to you. 
+If you have any questions or queries outside of these times, you can email me at agb214@exeter.ac.uk and I will get back to you as soon as I can. 
 
 ## Preface
 In your first stream you should have either worked with Zebrafish, plants or fungi. Each of those organisms would have been exposed to differing environmental conditions, which in turn, should result in them expressing a different genes in response. Knowledge of which genes are expressed in different exposure conditions help us understand the hosts response to stimuli. Measuring the difference in gene expression is the goal of RNA sequencing and is what we will be aiming to achieve in this tutorial. You are provided with the data sets which you will analyse. Here we will only be focusing on the plant stream were a *Arabidopsis thaliana* *pif4* mutant is grown at 22°C and 27°C with samples collected at 2 and 7 days exposure. 
