@@ -1,8 +1,7 @@
 ---
 title: "BIOM549 Sequencing Workshop"
-subtitle: "Get the updated workshop sheet here: https://ash-bell.github.io/BIOM549-RNA-Seq-Tutorial/"
 author: "Ashley Bell"
-date: "31/10/2022"
+date: "30/11/2022"
 output: rmdformats::material
 editor_options: 
   markdown: 
@@ -11,6 +10,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "C:/Users/agb214/OneDrive - University of Exeter/PhD/BIOM549/")
+knitr::opts_chunk$set(fig.width = 12, fig.height = 8)
 ```
 
 # Introduction
@@ -37,22 +37,9 @@ tabl <- "
 "
 cat(tabl)
 ```
-
-### Additional help sessions
-I will also make myself available over teams and in person in between
-seminars. These are not compulsory but do contact me via teams/email/in-person if you have any issues and I will help you solve them.
-```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-tabl <- "
-|Date & Time             | Location            | Items                        |
-|------------------------|---------------------|------------------------------|
-|Wed 07 Dec 11:30 - 14:30|Teams / TBC          |Drop in session               |
-|Wed 21 Dec 13:30 - 16:30|Teams / TBC          |Drop in session               |
-"
-cat(tabl)
-```
 If you have any questions or queries outside of these times, you can
 email me at [agb214\@exeter.ac.uk](mailto:agb214@exeter.ac.uk){.email}
-and I will get back to you as soon as I can.
+and I will get back to you when I can.
 
 ## Preface
 In your first stream you should have either worked with zebrafish,
@@ -64,7 +51,7 @@ response to stimuli. Editing or monitoring these pathways can help increase orga
 tutorial. 
 
 ## Experimental design
-Here you are provided with a data set from the plants stream where  *Arabidopsis thaliana* *pif4* mutants are grown at 22°C and 27°C with samples
+Here you are provided with a data set from the plants stream where  *Arabidopsis thaliana* *pif4* mutants are grown at 22$^\circ$C and 27$^\circ$C with samples
 collected at 2 and 7 days exposure. Collected samples have their RNA extracted, sequenced and mapped back to their original genome to determine which genes are enriched. From there we get a "count" data set, representing the number of RNA sequences mapping back to each *Arabidopsis* gene. From here, we can devise several hypothesis. 
 
 ### Hypothesis
@@ -74,9 +61,12 @@ collected at 2 and 7 days exposure. Collected samples have their RNA extracted, 
 4.    What can we concluded about the fitness of our mutant when exposed to higher temperatures?
 
 ### Data set link
-You can get access to the data sets required for this workshop on the SharePoint link in the [Data](https://vle.exeter.ac.uk/course/view.php?id=13271&section=10) tab. You will need the **count_data.csv**, **metadata.csv** and **Gene_annotations.tsv** files. 
+You can get access to the data sets required for this workshop on the SharePoint link in the [Data](https://vle.exeter.ac.uk/course/view.php?id=13271&sectionid=1477928) tab. You will need the **count_data.csv**, **metadata.csv** and **Gene_annotations.tsv** files. 
 
 These files will be available on Wed 30 Nov.
+
+### Your task
+You are to provide a maximum of three plots that best answer the hypotheses set above for feedback in two weeks time - Tues 13 Dec. See the **EXTRA: Better plotting examples** for ideas to improve your plots.
 
 # Installation
 When you turn up to the sequencing practical, you need to bring your
@@ -91,10 +81,10 @@ how to do this below.
     ![](install_rstudio.png)
 3.  After installing R and RStudio, open up RStudio. We next need to install R packages - additional programs written in R to analyse our data. To install R packages, copy the following and paste it into the console window. Press enter to run the code in your console. 
 ```{r, eval = FALSE}
-install.packages(c("tidyverse", "pheatmap", "WGCNA"))
+install.packages(c("tidyverse", "pheatmap"))
 ```
 ![](install_packages_RStudio.png) 
-4. After tidyverse has been installed (it will take a couple minutes), install DESeq2 the same way. Copy and paste the whole code chunk into the console and press enter. This will take a couple of minutes. After this, you're done. You never need to re-install any package you have previously installed. 
+4. After tidyverse has been installed (it will take a couple minutes), install the BiocConductor packages the same way. Copy and paste the whole code chunk into the console and press enter. This will take a couple of minutes. After this, you're done. You never need to re-install any package you have previously installed. 
 
 ```{r, eval = FALSE}
 if (!require("BiocManager", quietly = TRUE))
@@ -104,12 +94,12 @@ BiocManager::install(c("DESeq2","clusterProfiler","enrichplot"))
 ```
 
 # Analysis
-This portion starts the analysis. You should have access to two files on
+This portion starts the analysis. You should have access to three files on
 the SharePoint drive accessed through the BIOM549 VLE page. These are
-labelled **"metadata.csv"** and **"count_data.csv"**. The metadata table is a
+labelled **metadata.csv**, **count_data.csv** and **Gene_annotations.tsv**. The metadata table is a
 data frame containing which samples belong to which experimental group.
 The counts data frame is the output from the pre-processing analysis. This
-contains the number of reads that map to each *Arabidopsis* gene. Lets
+contains the number of reads that map to each *Arabidopsis* gene. The gene annotation file tell us the function of all genes within the *Arabidopsis* genome. Lets
 take a look at the data.
 
 ## Set-up
@@ -122,6 +112,7 @@ same folder as your script. Everything we are going to do from now on
 will be done in this folder.
 
 ![](R_screen.png) 
+
 ### Setting a working directory
 Next we need to tell the computer where is folder is located and
 everything we do should be done here. To do that go to Session --> Set
@@ -142,7 +133,6 @@ what libraries they need to install to used your code. Copy and paste the follow
 library(DESeq2)
 library(tidyverse)
 library(pheatmap)
-library(WGCNA)
 library(clusterProfiler)
 library(enrichplot)
 ```
@@ -168,18 +158,6 @@ View(metadata)
 As you can see, our count data set is the number of reads that mapped to each of the *Arabidopsis* genes for each of our samples. The metadata data set tells us which sample belongs to which exposure group. Pretty simple. Now lets see if any of the genes are significantly enriched (or not!) in our data set compare to the controls. 
 
 ## Analysis
-Next it is important the column names from our count data in the same
-order as the row names for the metadata. Without this, our downstream
-software will combine the data incorrectly. Both these commands should
-return "TRUE".
-
-```{r}
-# Are all the column names in our count data set in the row names of our metadata?
-all(colnames(count_data) %in% rownames(metadata))
-# Are the column names in our count data set in the exact sample order as the row names of our metadata?
-all(colnames(count_data) == rownames(metadata))
-```
-Notice how if we put a "#" in front of the a line of code, it doesn't run. A "#" tells R, don't run this code, it is a comment. Comments are very important to tell other people what a line of code does. As codes get more complicated, other people may want to modify your code for their purposes. Without a comment this if very hard to do. I recomend you do the same for your own notes. 
 
 ### Combining data sets into a DESeq2 object
 We need to combine our count data with our metadata. We use a
@@ -192,14 +170,24 @@ go.
 ```{r}
 metadata$Experimental_group <- as.factor(metadata$Experimental_group)
 metadata$Experimental_group <- relevel(metadata$Experimental_group, ref = "wildtype")
+```
 
-dds <- DESeqDataSetFromMatrix(countData = count_data,
+## Multi-factors
+We also need to account that our experiment has multiple parameters, not just two different experimental groups (*pif4* and wildtype). DESeq2 can account for this if you tell it. Here we define all our groups, Temperature,
+Experimental group (wildtype or mutant) and Days exposure (number of
+days exposed to each temperature).Here we also include an interaction
+term: `Days_exposure:Temperature` which tells us if the number of days
+exposed to each temperature together have an compounded effect compared to if they
+were individually measured.
+
+```{r}
+ddsMF <- DESeqDataSetFromMatrix(countData = count_data,
                               colData = metadata,
                               design = ~Experimental_group)
-
-dds
+design(ddsMF) <- formula(~ Temperature + Experimental_group + Days_exposure, Days_exposure:Temperature)
+ddsMF
 ```
-Notice when we type in `dds` into our console, we now have a
+Notice when we type in `ddsMF` into our console, we now have a
 DESeqDataSet. It has told us we have a metadata table and count assay, with
 our row names as genes, columns as samples and metadata categories as
 Temperature, Experimental_group, Replicate and Days_exposure. Great!
@@ -208,34 +196,17 @@ Temperature, Experimental_group, Replicate and Days_exposure. Great!
 We should remove genes that aren't expressed frequently. This
 removes the "noise" which helps us find significant trends. These genes
 that are rarely expressed need to be in higher quantities so we can be
-sure they are significantly expressed, so we remove them. The alternatives is to use [shrinkage methods](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#alternative-shrinkage-estimators), which we will not here. Therefore, if the gene is not expressed over 1000 times in our entire data set, it is
-removed. 1000 is an arbitrary number and could be change depending on
-the study, for example you could remove everything below the 95th
-percentile.
-```{r}
-keep <- rowSums(counts(dds)) >= 1000
-dds <- dds[keep, ]
-```
-
-Another example is remove any gene count that isn't at least 1000 in X
+sure they are significantly expressed, so we remove them. Here we remove any gene count that isn't at least 1000 in X
 samples.
 ```{r}
 # Get the length of the number of columns in our "count_data" data set
 X <- length(colnames(count_data))
 # Subset our DESeq2 object where the minimum gene count across our entire data set is over 1000 per gene
-keep <- rowSums(counts(dds) >= 1000) >= X
-dds <- dds[keep, ]
+keep <- rowSums(counts(ddsMF) >= 1000) >= X
+ddsMF <- ddsMF[keep, ]
 ```
-
-It is up to you to decide what filter to use. For this tutorial I will
-remove any gene count that is not at least 1000 in all samples. The
-great thing about DDSeq2 is it does all our calculations for us. There
-are
-```{r, echo=F}
-print(nrow(count_data))
-```
-genes in our data set. Imagine manually filtering each one out! This is
-the power of using a coding language to analyse large data sets.
+The great thing about DDSeq2 is it does all our calculations for us. There
+are `r {print(nrow(count_data))}` genes in our data set. Imagine manually filtering each one out! This is the power of using a coding language to analyse large data sets.
 
 ## Differential expression analysis
 Now we can calculate if the genes are statistically differential expressed.
@@ -244,140 +215,60 @@ that if you test for everything, by random chance you will find
 something that is significant but its just a "lucky" pattern. If you're interested, you can find out more [here](https://physiology.med.cornell.edu/people/banfelder/qbio/resources_2008/1.5_GenespringMTC.pdf).
 
 ```{r, message=FALSE}
-dds <- DESeq(dds)
+ddsMF <- DESeq(ddsMF)
 
 # Define our p-value (alpha) cutoff as 0.05
-res <- results(dds, alpha = 0.05)
+resMF <- results(ddsMF, alpha = 0.05)
 
 # Give us a quick summary of the results
 # LFC > 0 (up) is number of up regulated genes
 # LFC < 0 (down) is the number of down regulated genes
-summary(res)
+summary(resMF)
+```
+Over half of the genes are up-/down-regulated. However, its expected
+that at different temperatures and times gene expression will be
+different. If we just compare the experimental groups
+```{r}
+resMF <- results(ddsMF, contrast = c("Experimental_group", "wildtype", "pif4_mutant"), alpha = 0.05)
 ```
 ```{r, echo = FALSE}
-print(paste0("Number of significantly up/down regulated genes: ", sum(res$padj < 0.05, na.rm=TRUE)))
-print(paste0("Total number of genes in this dataset: ", nrow(assay(dds))))
+print(paste0("Number of significantly up/down regulated genes: ", sum(resMF$padj < 0.05, na.rm=TRUE)))
+print(paste0("Total number of genes in this dataset: ", nrow(assay(ddsMF))))
 ```
+Now accounting for differences in temperature, repeats and days exposure, we have qa better picture and differences between the mutant and control.
 
 ### Plotting
 So now we know there are a total number of genes that are significantly
 up/down regulated. But how does this look compared to the entire data set? We can plot this as a volcano plot.
 ```{r}
-plotMA(res, xlim=c(1000,20000), ylim=c(-0.5,0.5))
+plotMA(resMF, xlim=c(1000,20000), ylim=c(-0.5,0.5))
 ```
 The dots in blue are significantly up/down regulated and the ones in
 grey not. Lets take a closer look at the most significantly differentially
 regulated gene.
 
 ```{r}
-plotCounts(dds, gene=which.min(res$padj), intgroup="Experimental_group")
+plotCounts(ddsMF, gene=which.min(resMF$padj), intgroup="Experimental_group")
 ```
 We can definitely see this gene is down-regulated in the *pif4* mutant.
 
 ### Multigene analysis
 Its great that we can see genes that are differentially regulated, but what if we want to see more then one? We could plot multiple dot/boxplot like above, but that gets more difficult to visualise the more genes you have. An alternative is a heat map which, plots multiple genes at once. 
-
 ```{r}
-resSig <- res[res$padj < 0.05, ]
-norm_counts <- counts(dds, normalized = T) %>%
+resSig <- resMF[resMF$padj < 0.05, ]
+norm_counts <- counts(ddsMF, normalized = T) %>%
               data.frame()
-filtered <- norm_counts[rownames(norm_counts) %in% rownames(resSig), ]
-pheatmap(filtered)
+filtered <- ddsMF[rownames(ddsMF) %in% rownames(resSig), ]
+pheatmap(assay(filtered), show_rownames = F)
 ```
-We can definitely see differences in multiple genes now. This helps us identify by eye which genes are worth a closer look at.
-
-## Multi-factor analysis
-So we have concluded there are genes that are differentially expressed in our *pif4* mutant compare to our control. However, we have not taken into account that our experiment has multiple parameters, not just two different experimental groups (*pif4* and wildtype). DESeq2 can account for this if you tell it. Lets do
-that and see the results. Here we define all our groups, Temperature,
-Experimental group (wildtype or mutant) and Days exposure (number of
-days exposed to each temperature).Here we also include an interaction
-term: `Days_exposure:Temperature` which tells us if the number of days
-exposed to each temperature together have an compunded effect compared to if they
-were individually measured.
+We can definitely see differences in multiple genes now. Lets pick the top 10 most signficantly differentially expressed genes.
 ```{r}
-ddsMF <- dds
-design(ddsMF) <- formula(~ Temperature + Experimental_group + Days_exposure, Days_exposure:Temperature)
-ddsMF <- DESeq(ddsMF)
-resMF <- results(ddsMF, alpha = 0.05)
-summary(resMF)
+resSig <- resMF[resMF$padj < 0.05, ]
+resSig <- resSig[order(resSig$padj), ][1:10, ]
+filtered <- ddsMF[rownames(ddsMF) %in% rownames(resSig), ]
+pheatmap(assay(filtered))
 ```
-
-Over half of the genes are up-/down-regulated. However, its expected
-that at different temperatures and times gene expression will be
-different. Lets just focus if these variables still have an effect on
-the wildtype versus *pif4* mutant
-```{r}
-resMF <- results(ddsMF, contrast = c("Experimental_group", "wildtype", "pif4_mutant"), alpha = 0.05)
-summary(resMF)
-```
-It still looks like they do. Great! Now lets look at the samples as a whole in a bit more detail. 
-
-## Count transformations
-When working with differential expression, we use raw counts as we are
-treating each sample discretely. However, if we want to cluster groups (combined multiple samples), we should transform the raw counts to be relative to each other. DESeq2 has a number of transformation functions, such as `vst`, `rlog` and `normTransform`. There are
-advantages and disadvantages if each which I won't cover, but you can find out more [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#how-do-i-use-vst-or-rlog-data-for-differential-testing). Instead,
-I'm going to use `vst`, short for Variance Stabilizing Transformation and `blind = FALSE` as I want it to be aware we have different exposure groups.
-```{r}
-vsd <- vst(ddsMF, blind=FALSE)
-```
-Our data set has now been normalised so we can see how different each group clusters
-
-## Replicate clustering
-First we need to see how closely our replicates cluster. Are they truly different compared to the controls or is everything random. But how do we visualise 1000s of genes in one plot? We use a method called dimension reduction techniques, which condenses a data set into a single point. There are many methods to do this, but in this case we will use a Principle Component Analysis (PCA). Here I have plotted the two PCA plots, one coloured by experimental group, the other by days exposure and temperature. 
-```{r}
-plotPCA(vsd, intgroup = c("Experimental_group"))
-
-plotPCA(vsd, intgroup = c("Days_exposure", "Temperature"))
-```
-Our replicates cluster based on the exposure conditions, showing us that there are differences in gene expression across conditions but not within replicates (Good!). 
-
-## Gene clusters
-If you look back at the heat map we made of differentially expressed genes, you remember we only had ~10 genes that were significantly differentially expressed. Here we have over 300, which would be difficult to visualise one by one, even using a heat map. A solution is to group genes that have the same expression profile (they are expressed similarity). We can then look at groups of genes rather then each gene individually. Let try clustering our groups of genes together and see how they compare. 
-```{r}
-# subset genes if significantly differentially expressed
-resSig <- resMF[resMF$padj < 0.05, ] %>%
-  data.frame()
-
-# get from our transformed data set the counts of genes that are differentially expressed
-cluster <- t(assay(vsd[row.names(assay(vsd)) %in% row.names(resSig), ]))
-
-# cluster the genes by similar expression with a starting maximum of 28 groups
-bwnet <- blockwiseModules(cluster,
-                 TOMType = "signed",
-                 power = 28,
-                 mergeCutHeight = 0.25,
-                 numericLabels = FALSE,
-                 randomSeed = 1234,
-                 reassignThreshold = 0,
-                 verbose = 3)
-
-# get number of genes for each module
-table(bwnet$colors)
-```
-We can see from this table how many genes were assigned to each cluster (colour). 
-
-This is just to help understand how this clustering system works. Genes are on the leaves of this hierarchical clustering tree. The more similar profile of expression in each group, the closer they are on the tree. We then cut the tree at a certain height to get our groups. Grey module = all genes that doesn't fall into other modules. 
-```{r}
-# Plot the dendrogram and the module colors before and after merging underneath
-plotDendroAndColors(bwnet$dendrograms[[1]], bwnet$colors, "Groups",
-                    dendroLabels = FALSE,
-                    addGuide = TRUE,
-                    hang= 0.03,
-                    guideHang = 0.05)
-```
-Lets plot the counts of each group and see how they compared. 
-```{r, out.width = "200%"}
-# plot the different groups
-data.frame(bwnet$colors) %>%
-rownames_to_column() %>%
-left_join(rownames_to_column(data.frame(assay(vsd))), by = "rowname") %>%
-gather(key = "sample", value = "count", -bwnet.colors, -rowname) %>%
-left_join(rownames_to_column(metadata, var = "sample"), by = "sample") %>%
-ggplot(aes(x = bwnet.colors, y = count, fill = Experimental_group)) +
-geom_boxplot() +
-facet_grid(Temperature~Days_exposure)
-```
-We can see in the Yellow and blue group, gene expression is down-regulated slightly compared to the controls. We should take a closer look at these groups.
+This helps us identify by eye which genes are worth a closer look at. There is a clear division between pif4 mutant and control experimental groups. 
 
 # Functional analysis 
 Its great that we now know which genes are differentially expressed, but what do these genes do? We therefore need to determine the function of each gene in the *Arabidopsis* genome and we can then speculate if gene X is enriched in a certain treatment, it might result in Y. This is partly why we work on a model organsism such as *Arabidopsis* as there are hundreds if not thousands of studies that have already characterised the function of genes for us. Theses are then classified as genome ontology terms (GO terms) which give a curated name and function to each gene.This is because many studies may refer to a gene differently, so we standardised the names and functions in a database. I have already downloaded the gene name to Go term database for you, and you can find more about that [here](https://www.arabidopsis.org/tools/bulk/go/index.jsp). Lets load in the database and take a look
@@ -388,7 +279,6 @@ head(annotations)
 We can see from this data set we have the gene names (Locus), Go.term (specific function), GO.ID (GO term), category (is this gene function : proc/bp/biological process, func/fc/molecular function or comp/cc/cellular process), Go.Slim.s (general function) and various other details on how the gene function was determined. 
 
 ## Gene Set Enrichment
-
 We want to know if our function (gene set) is differentially expressed in our exposure group compared to our control. However, we have differing numbers of genes that are part of the same function (for example, we may have 10 genes that regulate height, but 100 genes controlling growth rate). One gene that that is part of a small gene set is more influential and changing the overall function of an organism then one gene from a large gene set. Therefore, we need information into the gene set size when determining if a function is differentially expressed. This is calculated as a geneRatio. This is a complicated equation and you can find out more [here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html#ora-algorithm), but basically it is the fraction of differentially expressed genes found in the gene set. To do that, we use the `GSEA` function from the library `clusterProfiler` and plot the results using `enrichplot`.
 
 The `GSEA` function requires three inputs, a list of genes and the log2fold change we get from `DESeq2`'s `results` function from our multifactor analysis, a term to gene data frame containing our Go terms and gene names, and lastly a term to names data frame with our Go terms to specific Go term functions. We also need to correct for multiple retesting and we use the Benjamini-Hochberg method. We also use an `eps` of 0 to allow us to test for p-values smaller then the default 1e^-06. 
@@ -430,12 +320,12 @@ ridgeplot(GSE, showCategory=10) +
   labs(x = "Gene Ratio Distribution")
 ```
 For the top ten gene sets, show the Gene Ratio of each Go term and plot them as distributions. 
-```{r}
+```{r, fig.width = 12, fig.height = 8}
 emapplot(pairwise_termsim(GSE), showCategory = 100)
 ```
 Of the top 100 gene sets, which ones are related by function and are they statistically significant. 
 
-```{r}
+```{r, fig.width = 12, fig.height = 8}
 cnetplot(GSE, categorySize="pvalue", foldChange=geneList, showCategory = 1)
 ```
 Which genes are contributing to the top gene set and what is the log2fold change for each gene
@@ -445,7 +335,7 @@ pmcplot(GSE$Description[1:5], 2010:2018, proportion=FALSE)
 ```
 Of the top 5 gene sets, between 2010 and 2018, how many studies on PMC mentioned this gene set by name. 
 
-# EXTRA:Better plotting examples
+# EXTRA: Better plotting examples
 ## Volcano plot of significantly enriched genes
 ```{r}
 library(ggrepel)
@@ -468,7 +358,7 @@ ggplot(vol_plot_data, aes(x = log2FoldChange, y = -log10(padj))) +
 ## Boxplot gene of interest
 ```{r}
 #Select your chosen gene 
-df <- plotCounts(dds, gene=which.min(res$padj), 
+df <- plotCounts(ddsMF, gene=which.min(resMF$padj), 
                 intgroup=c("Experimental_group", "Temperature"), 
                 returnData = T) %>%
                 mutate(Temperature = as.factor(Temperature))
@@ -478,4 +368,28 @@ ggplot(df, aes(x = Experimental_group, y = count, fill = Temperature)) +
   geom_boxplot() +
   geom_dotplot(binaxis = 'y', stackdir='center', dotsize = 0.75, 
   position=position_dodge(0.75))
+```
+
+```{r}
+dotplot(GSE, showCategory=10, split=".sign") + 
+  facet_grid(.~.sign) + 
+  scale_color_gradient(high = "#56B1F7", low = "#132B43")
+```
+
+```{r}
+library(ggridges)
+ridgeplot(GSE, showCategory=10) + 
+  labs(x = "Gene Ratio Distribution",
+       title = "Top 10 enriched functions") + 
+  scale_fill_gradient(high = "#56B1F7", low = "#132B43")
+```
+
+```{r}
+resSig <- resMF[resMF$padj < 0.05, ]
+resSig <- resSig[order(resSig$padj), ][1:10, ]
+filtered <- ddsMF[rownames(ddsMF) %in% rownames(resSig), ]
+pheatmap(t(assay(filtered)), 
+         color=colorRampPalette(c("blue1", "skyblue", "white", "pink", "red"))(50), 
+         display_numbers = T, number_format = "%.0f",
+         annotation_row = metadata)
 ```
