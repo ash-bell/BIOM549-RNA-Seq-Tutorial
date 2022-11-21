@@ -14,6 +14,10 @@ knitr::opts_chunk$set(fig.width = 12, fig.height = 8)
 ```
 
 # Introduction
+
+## Live worksheet
+https://ash-bell.github.io/BIOM549-RNA-Seq-Tutorial/
+
 Welcome to the BIOM549 bioinformatics workshop. The goal of this
 workshop is to provide you with some basic insight in how RNA-Seq data
 sets are analysed. Using this worksheet we will cover the following
@@ -52,13 +56,12 @@ tutorial.
 
 ## Experimental design
 Here you are provided with a data set from the plants stream where  *Arabidopsis thaliana* *pif4* mutants are grown at 22$^\circ$C and 27$^\circ$C with samples
-collected at 2 and 7 days exposure. Collected samples have their RNA extracted, sequenced and mapped back to their original genome to determine which genes are enriched. From there we get a "count" data set, representing the number of RNA sequences mapping back to each *Arabidopsis* gene. From here, we can devise several hypothesis. 
+collected at 2 and 7 days exposure. Collected samples have their RNA extracted, sequenced and mapped back to their original genome to determine which genes are enriched. From there we get a "count" data set, representing the number of RNA sequences mapping back to each *Arabidopsis* gene. From here, we can devise several experimental questions. 
 
-### Hypothesis
-1.    What genes are significantly up-regulated and down-regulated in the *pif4* mutant compared to our controls?
-2.    What clusters of genes are differentially express between our exposure groups?
-3.    What are the functions of our differentially expressed genes?
-4.    What can we concluded about the fitness of our mutant when exposed to higher temperatures?
+### Experimental questions
+1. How many genes are significantly up-regulated or down-regulated in the *pif4* mutant compared to our controls?
+2. What are some examples of gene(s) are significantly up-regulated or down-regulated in the *pif4* mutant compared to our controls? What functions are they part of?
+3. Which functions are differentially expressed in our *pif4* mutant compared to our controls?
 
 ### Data set link
 You can get access to the data sets required for this workshop on the SharePoint link in the [Data](https://vle.exeter.ac.uk/course/view.php?id=13271&sectionid=1477928) tab. You will need the **count_data.csv**, **metadata.csv** and **Gene_annotations.tsv** files. 
@@ -66,7 +69,9 @@ You can get access to the data sets required for this workshop on the SharePoint
 These files will be available on Wed 30 Nov.
 
 ### Your task
-You are to provide a maximum of three plots that best answer the hypotheses set above for feedback in two weeks time - Tues 13 Dec. See the **EXTRA: Better plotting examples** for ideas to improve your plots.
+You are to provide a maximum of three plots that best answer the experimental questions set above for feedback in two weeks time - Tues 13 Dec. See the **EXTRA: Better plotting examples** for ideas to improve your plots.
+
+During the Tues 13 Dec session I will go through your plots and help troubleshoot any issues. At the end of the second session you should have planned out and started on your poster due at the end of Term 2.
 
 # Installation
 When you turn up to the sequencing practical, you need to bring your
@@ -81,7 +86,7 @@ how to do this below.
     ![](install_rstudio.png)
 3.  After installing R and RStudio, open up RStudio. We next need to install R packages - additional programs written in R to analyse our data. To install R packages, copy the following and paste it into the console window. Press enter to run the code in your console. 
 ```{r, eval = FALSE}
-install.packages(c("tidyverse", "pheatmap"))
+install.packages(c("tidyverse", "pheatmap", "ggupset", "ggridges", "europepmc"))
 ```
 ![](install_packages_RStudio.png) 
 4. After tidyverse has been installed (it will take a couple minutes), install the BiocConductor packages the same way. Copy and paste the whole code chunk into the console and press enter. This will take a couple of minutes. After this, you're done. You never need to re-install any package you have previously installed. 
@@ -135,6 +140,9 @@ library(tidyverse)
 library(pheatmap)
 library(clusterProfiler)
 library(enrichplot)
+library(ggupset)
+library(ggridges)
+library(europepmc)
 ```
 ### Reading in our data sets
 Now we can finally load in and look at our data specifying the first column of our data set is our row names. Again copy this into your script and run the code below.
@@ -315,7 +323,6 @@ dotplot(GSE, showCategory=10, split=".sign") +
 ```
 For the top ten gene sets which functions are enriched or suppressed, how many Go terms are contribution to that gene set and is the statistically significant.
 ```{r}
-library(ggridges)
 ridgeplot(GSE, showCategory=10) + 
   labs(x = "Gene Ratio Distribution")
 ```
@@ -330,7 +337,6 @@ cnetplot(GSE, categorySize="pvalue", foldChange=geneList, showCategory = 1)
 ```
 Which genes are contributing to the top gene set and what is the log2fold change for each gene
 ```{r}
-library(europepmc)
 pmcplot(GSE$Description[1:5], 2010:2018, proportion=FALSE)
 ```
 Of the top 5 gene sets, between 2010 and 2018, how many studies on PMC mentioned this gene set by name. 
@@ -377,7 +383,6 @@ dotplot(GSE, showCategory=10, split=".sign") +
 ```
 
 ```{r}
-library(ggridges)
 ridgeplot(GSE, showCategory=10) + 
   labs(x = "Gene Ratio Distribution",
        title = "Top 10 enriched functions") + 
