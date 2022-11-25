@@ -34,10 +34,10 @@ not compulsory to attend but, these are the only times I am teaching. I
 would highly recommend you attend them.
 ```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
-|Date & Time                  | Location          | Items                               |
-|-----------------------------|-------------------|-------------------------------------|
-|Wed 30 Nov 13:30 - 16:30     |Old Library 137    |Installing R and analysis walkthrough|
-|Tues 13 Dec 09:30 - 12:30    |Old Library 137    |How to present your data             |
+|Date & Time             | Location      | Items                               |
+|------------------------|---------------|-------------------------------------|
+|Wed 30 Nov 13:30 - 16:30|Old Library 137|Installing R and analysis walkthrough|
+|Fri 16 Dec 10:30 - 13:00|Amory B105     |How to present your data             |
 "
 cat(tabl)
 ```
