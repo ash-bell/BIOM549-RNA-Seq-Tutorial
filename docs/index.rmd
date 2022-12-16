@@ -178,6 +178,8 @@ go.
 ```{r}
 metadata$Experimental_group <- as.factor(metadata$Experimental_group)
 metadata$Experimental_group <- relevel(metadata$Experimental_group, ref = "wildtype")
+metadata$Temperature <- as.factor(metadata$Temperature)
+metadata$Replicate <- as.factor(metadata$Replicate)
 ```
 
 ## Multi-factors
