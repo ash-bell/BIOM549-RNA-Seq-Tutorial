@@ -1,6 +1,6 @@
 ---
 title: "BIOM549 Sequencing Workshop"
-author: "Presented by Dr. Sally Rogers, written Ashley Bell"
+author: "Presented by Dr. Sally Rogers, written by Ashley Bell"
 date: "30/11/2023"
 output: rmdformats::material
 editor_options: 
@@ -64,14 +64,12 @@ collected at 2 and 7 days exposure. Collected samples have their RNA extracted, 
 3. Which functions are differentially expressed in our *pif4* mutant compared to our controls?
 
 ### Data set link
-You can get access to the data sets required for this workshop on the SharePoint link in the [Data](https://vle.exeter.ac.uk/course/view.php?id=13271&sectionid=1477928) tab. You will need the **count_data.csv**, **metadata.csv** and **Gene_annotations.tsv** files. 
-
-These files will be available on Thu 30 Nov.
+You can get access to the data sets required for this workshop on the GitHub link here [Data](https://github.com/ash-bell/BIOM549-RNA-Seq-Tutorial/tree/main/data). You will need the **count_data.csv**, **metadata.csv** and **Gene_annotations.tsv** files. 
 
 ### Your task
-You are to provide a maximum of three plots that best answer the experimental questions set above for feedback in two weeks time - Wed 13 Dec. See the **EXTRA: Better plotting examples** for ideas to improve your plots.
+You are to provide a maximum of three plots that best answer the experimental questions set above for feedback in two weeks time - Wed 13th Dec. See the **EXTRA: Better plotting examples** for ideas to improve your plots.
 
-During the Wed 13 Dec session I will go through your plots and help troubleshoot any issues. At the end of the second session you should have planned out and started on your poster due at the end of Term 2.
+During the Wed 13th Dec session I will go through your plots and help troubleshoot any issues. At the end of the second session you should have planned out and started on your poster due at the end of Term 2.
 
 # Installation
 When you turn up to the sequencing practical, you need to bring your
